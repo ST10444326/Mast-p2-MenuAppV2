@@ -11,8 +11,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';  // Picker library for course selection
-import { useFonts } from 'expo-font';  // Load custom fonts
+import { useFonts, Roboto_400Regular } from 'expo-google-fonts/roboto';  // Load custom fonts
 import * as FileSystem from 'expo-file-system';
+import * as AppLoading from 'expo-app-loading' ;// Use expo-app-loading to handle loading screen
 
 // Types for the menu item and stack navigation
 type MenuItem = {
@@ -37,14 +38,19 @@ const App: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
   // Load custom font (example: Google Font)
-  const [fontsLoaded] = useFonts({
-    'CustomFont': require('./assets/fonts/CustomFont.ttf'),  // Replace with your font
+  let [fontsLoaded] = useFonts({
+    Roboto_400Regular,
   });
 
+  // Load menu items from file system (mock loading if required)
   useEffect(() => {
-    // Load menu items from file system (mock loading if required)
     loadMenu();
   }, []);
+
+  // Fallback to loading screen while fonts are being loaded
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   // Add a menu item
   const addItem = (item: MenuItem) => {
@@ -53,12 +59,14 @@ const App: React.FC = () => {
 
   // Load menu items (mock example, you can add file loading logic here)
   const loadMenu = async () => {
-    // FileSystem logic if you want to load items from the filesystem
+    // Example mock data
     const mockItems: MenuItem[] = [
       { name: 'Chicken & Corn', description: 'Blended chicken and corn', course: 'Soups', price: '22' },
       { name: 'Butternut', description: 'Blended butternut with cinnamon', course: 'Soups', price: '25' },
       { name: 'Grilled Chicken Salad', description: 'Grilled chicken with dressing', course: 'Appetizers', price: '33' },
-      // ... add more items for mock data
+      { name: 'Smoked Salmon Salad', description: 'Smoked salmon with Quinoa dressing', course: 'Appetizers', price: '42' },
+      { name: 'Mixed Grill Combo', description: 'Variety of meat', course: 'Main Course 1', price: '185' },
+      { name: 'Mediterranean Seafood Boil', description: 'Mix of various seafood and veggies', course: 'Main Course 2', price: '105' },
     ];
     setMenuItems(mockItems);
   };
@@ -128,7 +136,6 @@ const App: React.FC = () => {
             <Picker.Item key={index} label={course} value={course} />
           ))}
         </Picker>
-
         <TextInput
           placeholder="Price"
           value={price}
@@ -140,10 +147,6 @@ const App: React.FC = () => {
       </View>
     );
   };
-
-  if (!fontsLoaded) {
-    return null; // Avoid rendering until fonts are loaded
-  }
 
   return (
     <NavigationContainer>
@@ -159,16 +162,17 @@ const App: React.FC = () => {
   );
 };
 
-// Styling for the app
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: '#f8f8f8',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 28,
-    fontFamily: 'CustomFont',  // Custom font loaded here
+    fontFamily: 'Roboto_400Regular',  
     fontWeight: 'bold',
     color: '#333',
   },
@@ -193,6 +197,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
+    width: '100%',
   },
   button: {
     padding: 10,
@@ -201,8 +206,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 5,
     marginTop: 10,
+    width: '100%',
   },
 });
 
 export default App;
-
