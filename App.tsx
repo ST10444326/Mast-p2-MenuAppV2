@@ -10,12 +10,8 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';  // Picker library for course selection
-//import { useFonts, Roboto_400Regular } from 'expo-google-fonts/roboto';  // Load custom fonts
-import * as FileSystem from 'expo-file-system';
-//import AppLoading from 'expo-app-loading' ;// Use expo-app-loading to handle loading screen
+import { Picker } from '@react-native-picker/picker';  
 
-// Types for the menu item and stack navigation
 type MenuItem = {
   name: string;
   description: string;
@@ -28,55 +24,30 @@ type RootStackParamList = {
   AddItem: { addItem: (item: MenuItem) => void };
 };
 
-// Create the Stack Navigator
+
 const Stack = createStackNavigator<RootStackParamList>();
 
-// Predefined courses
+
 const courses = ['Soups', 'Appetizers', 'Main Course 1', 'Main Course 2', 'Dessert', 'Beverages'];
 
-const App: React.FC = () => {
+const App = function() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
-  // Load custom font (example: Google Font)
-  //let [fontsLoaded] = useFonts({
-  //  Roboto_400Regular,
-  //});
-
-  // Load menu items from file system (mock loading if required)
-  useEffect(() => {
-    loadMenu();
-  }, []);
-
-  // Fallback to loading screen while fonts are being loaded
-  //if (!fontsLoaded) {
-  //  return <AppLoading />;
-  //}
-
-  // Add a menu item
+ 
   const addItem = (item: MenuItem) => {
     setMenuItems((prevItems) => [...prevItems, item]);
   };
 
-  // Load menu items (mock example, you can add file loading logic here)
-  const loadMenu = async () => {
-    // Example mock data
-    const mockItems: MenuItem[] = [
-      { name: 'Chicken & Corn', description: 'Blended chicken and corn', course: 'Soups', price: '22' },
-      { name: 'Butternut', description: 'Blended butternut with cinnamon', course: 'Soups', price: '25' },
-      { name: 'Grilled Chicken Salad', description: 'Grilled chicken with dressing', course: 'Appetizers', price: '33' },
-      { name: 'Smoked Salmon Salad', description: 'Smoked salmon with Quinoa dressing', course: 'Appetizers', price: '42' },
-      { name: 'Mixed Grill Combo', description: 'Variety of meat', course: 'Main Course 1', price: '185' },
-      { name: 'Mediterranean Seafood Boil', description: 'Mix of various seafood and veggies', course: 'Main Course 2', price: '105' },
-    ];
-    setMenuItems(mockItems);
-  };
-
-  // HomeScreen to display menu items and total count
+  
   const HomeScreen = ({ navigation }: { navigation: any }) => {
+    const total = menuItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+    const average = menuItems.length > 0 ? total / menuItems.length : 0;
+
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Chef's Prepared Menu</Text>
         <Text style={styles.subtitle}>Total Items: {menuItems.length}</Text>
+        <Text style={styles.subtitle}>Average Price: R{average.toFixed(2)}</Text>
         <FlatList
           data={menuItems}
           keyExtractor={(item, index) => index.toString()}
@@ -84,7 +55,7 @@ const App: React.FC = () => {
             <View style={styles.item}>
               <Text style={styles.itemTitle}>{item.name} - {item.course}</Text>
               <Text>{item.description}</Text>
-              <Text>Price: ${item.price}</Text>
+              <Text style={styles.priceText}>R{parseFloat(item.price).toFixed(2)}</Text>
             </View>
           )}
         />
@@ -95,7 +66,7 @@ const App: React.FC = () => {
     );
   };
 
-  // AddItemScreen for adding new menu items
+  
   const AddItemScreen = ({ navigation, route }: any) => {
     const { addItem } = route.params;
     const [name, setName] = useState('');
@@ -172,7 +143,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    //fontFamily: 'Roboto_400Regular',  
     fontWeight: 'bold',
     color: '#333',
   },
@@ -190,6 +160,11 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontWeight: 'bold',
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
   },
   input: {
     borderWidth: 1,
