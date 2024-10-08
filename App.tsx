@@ -11,9 +11,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';  // Picker library for course selection
-import { useFonts, Roboto_400Regular } from 'expo-google-fonts/roboto';  // Load custom fonts
+//import { useFonts, Roboto_400Regular } from 'expo-google-fonts/roboto';  // Load custom fonts
 import * as FileSystem from 'expo-file-system';
-import * as AppLoading from 'expo-app-loading' ;// Use expo-app-loading to handle loading screen
+//import AppLoading from 'expo-app-loading' ;// Use expo-app-loading to handle loading screen
 
 // Types for the menu item and stack navigation
 type MenuItem = {
@@ -38,9 +38,9 @@ const App: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
   // Load custom font (example: Google Font)
-  let [fontsLoaded] = useFonts({
-    Roboto_400Regular,
-  });
+  //let [fontsLoaded] = useFonts({
+  //  Roboto_400Regular,
+  //});
 
   // Load menu items from file system (mock loading if required)
   useEffect(() => {
@@ -48,9 +48,9 @@ const App: React.FC = () => {
   }, []);
 
   // Fallback to loading screen while fonts are being loaded
-  if (!fontsLoaded) {
-    return <AppLoading />;
-  }
+  //if (!fontsLoaded) {
+  //  return <AppLoading />;
+  //}
 
   // Add a menu item
   const addItem = (item: MenuItem) => {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontFamily: 'Roboto_400Regular',  
+    //fontFamily: 'Roboto_400Regular',  
     fontWeight: 'bold',
     color: '#333',
   },
