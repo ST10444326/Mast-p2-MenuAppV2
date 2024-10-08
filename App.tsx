@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
@@ -10,9 +10,11 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';  // Picker moved to @react-native-picker/picker
+import { Picker } from '@react-native-picker/picker';  // Picker library for course selection
+import { useFonts } from 'expo-font';  // Load custom fonts
+import * as FileSystem from 'expo-file-system';
 
-// Define the types for MenuItem and stack parameters
+// Types for the menu item and stack navigation
 type MenuItem = {
   name: string;
   description: string;
@@ -25,45 +27,54 @@ type RootStackParamList = {
   AddItem: { addItem: (item: MenuItem) => void };
 };
 
-// Create Stack Navigator
+// Create the Stack Navigator
 const Stack = createStackNavigator<RootStackParamList>();
 
-const courses = ['Starters', 'Mains', 'Dessert'];
+// Predefined courses
+const courses = ['Soups', 'Appetizers', 'Main Course 1', 'Main Course 2', 'Dessert', 'Beverages'];
 
 const App: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
+  // Load custom font (example: Google Font)
+  const [fontsLoaded] = useFonts({
+    'CustomFont': require('./assets/fonts/CustomFont.ttf'),  // Replace with your font
+  });
+
+  useEffect(() => {
+    // Load menu items from file system (mock loading if required)
+    loadMenu();
+  }, []);
+
+  // Add a menu item
   const addItem = (item: MenuItem) => {
-    setMenuItems([...menuItems, item]);
+    setMenuItems((prevItems) => [...prevItems, item]);
   };
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen
-          name="AddItem"
-          component={AddItemScreen}
-          options={{ title: 'Add Menu Item' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+  // Load menu items (mock example, you can add file loading logic here)
+  const loadMenu = async () => {
+    // FileSystem logic if you want to load items from the filesystem
+    const mockItems: MenuItem[] = [
+      { name: 'Chicken & Corn', description: 'Blended chicken and corn', course: 'Soups', price: '22' },
+      { name: 'Butternut', description: 'Blended butternut with cinnamon', course: 'Soups', price: '25' },
+      { name: 'Grilled Chicken Salad', description: 'Grilled chicken with dressing', course: 'Appetizers', price: '33' },
+      // ... add more items for mock data
+    ];
+    setMenuItems(mockItems);
+  };
 
-  // HomeScreen
-  function HomeScreen({ navigation }: { navigation: any }) {
+  // HomeScreen to display menu items and total count
+  const HomeScreen = ({ navigation }: { navigation: any }) => {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Chef's Menu</Text>
+        <Text style={styles.title}>Chef's Prepared Menu</Text>
         <Text style={styles.subtitle}>Total Items: {menuItems.length}</Text>
         <FlatList
           data={menuItems}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.item}>
-              <Text>
-                {item.name} - {item.course}
-              </Text>
+              <Text style={styles.itemTitle}>{item.name} - {item.course}</Text>
               <Text>{item.description}</Text>
               <Text>Price: ${item.price}</Text>
             </View>
@@ -74,10 +85,10 @@ const App: React.FC = () => {
         </TouchableOpacity>
       </View>
     );
-  }
+  };
 
-  // AddItemScreen
-  function AddItemScreen({ navigation, route }: any) {
+  // AddItemScreen for adding new menu items
+  const AddItemScreen = ({ navigation, route }: any) => {
     const { addItem } = route.params;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -128,9 +139,27 @@ const App: React.FC = () => {
         <Button title="Add Item" onPress={handleAddItem} />
       </View>
     );
+  };
+
+  if (!fontsLoaded) {
+    return null; // Avoid rendering until fonts are loaded
   }
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          name="AddItem"
+          component={AddItemScreen}
+          options={{ title: 'Add Menu Item' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 };
 
+// Styling for the app
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -138,11 +167,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
+    fontFamily: 'CustomFont',  // Custom font loaded here
     fontWeight: 'bold',
+    color: '#333',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
     marginVertical: 10,
   },
   item: {
@@ -151,6 +182,10 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     marginVertical: 5,
     borderRadius: 5,
+    backgroundColor: '#fff',
+  },
+  itemTitle: {
+    fontWeight: 'bold',
   },
   input: {
     borderWidth: 1,
@@ -170,3 +205,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
